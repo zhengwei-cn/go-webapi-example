@@ -1,0 +1,707 @@
+basePath: /api/v1
+definitions:
+  models.CreateProductRequest:
+    properties:
+      description:
+        description: 产品描述
+        example: 最新款智能手机
+        type: string
+      name:
+        description: 产品名称
+        example: iPhone 15
+        type: string
+      price:
+        description: 产品价格
+        example: 999.99
+        minimum: 0
+        type: number
+      stock:
+        description: 库存数量
+        example: 100
+        minimum: 0
+        type: integer
+      user_id:
+        description: 创建用户ID
+        example: 1
+        type: integer
+    required:
+    - name
+    - price
+    - user_id
+    type: object
+  models.CreateUserRequest:
+    properties:
+      age:
+        description: 年龄
+        example: 25
+        minimum: 0
+        type: integer
+      email:
+        description: 邮箱地址
+        example: user@example.com
+        type: string
+      name:
+        description: 用户姓名
+        example: 张三
+        type: string
+      password:
+        description: 密码（至少6位）
+        example: password123
+        minLength: 6
+        type: string
+      role:
+        description: 用户角色（可选）
+        example: user
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  models.LoginRequest:
+    properties:
+      email:
+        description: 邮箱地址
+        example: admin@example.com
+        type: string
+      password:
+        description: 密码
+        example: admin123456
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  models.LoginResponse:
+    properties:
+      token:
+        description: JWT访问令牌
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+      user:
+        allOf:
+        - $ref: '#/definitions/models.UserProfile'
+        description: 用户信息
+    type: object
+  models.Product:
+    properties:
+      created_at:
+        description: 创建时间
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      description:
+        description: 产品描述
+        example: 最新款智能手机
+        type: string
+      id:
+        description: 产品ID
+        example: 1
+        type: integer
+      name:
+        description: 产品名称
+        example: iPhone 15
+        type: string
+      price:
+        description: 产品价格
+        example: 999.99
+        minimum: 0
+        type: number
+      stock:
+        description: 库存数量
+        example: 100
+        minimum: 0
+        type: integer
+      updated_at:
+        description: 更新时间
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      user:
+        allOf:
+        - $ref: '#/definitions/models.User'
+        description: 关联用户信息
+      user_id:
+        description: 创建用户ID
+        example: 1
+        type: integer
+    required:
+    - name
+    - price
+    type: object
+  models.UpdateProductRequest:
+    properties:
+      description:
+        description: 产品描述（可选）
+        example: 升级版智能手机
+        type: string
+      name:
+        description: 产品名称（可选）
+        example: iPhone 15 Pro
+        type: string
+      price:
+        description: 产品价格（可选）
+        example: 1299.99
+        minimum: 0
+        type: number
+      stock:
+        description: 库存数量（可选）
+        example: 50
+        minimum: 0
+        type: integer
+    type: object
+  models.UpdateUserRequest:
+    properties:
+      age:
+        description: 年龄（可选）
+        example: 30
+        minimum: 0
+        type: integer
+      name:
+        description: 用户姓名（可选）
+        example: 李四
+        type: string
+    type: object
+  models.User:
+    properties:
+      age:
+        description: 年龄
+        example: 25
+        minimum: 0
+        type: integer
+      created_at:
+        description: 创建时间
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      email:
+        description: 邮箱地址
+        example: user@example.com
+        type: string
+      id:
+        description: 用户ID
+        example: 1
+        type: integer
+      is_active:
+        description: 是否激活
+        example: true
+        type: boolean
+      name:
+        description: 用户姓名
+        example: 张三
+        type: string
+      role:
+        description: 用户角色（user/admin/superadmin）
+        example: user
+        type: string
+      updated_at:
+        description: 更新时间
+        example: "2023-01-01T00:00:00Z"
+        type: string
+    required:
+    - email
+    - name
+    type: object
+  models.UserProfile:
+    properties:
+      age:
+        description: 年龄
+        example: 25
+        type: integer
+      email:
+        description: 邮箱地址
+        example: user@example.com
+        type: string
+      id:
+        description: 用户ID
+        example: 1
+        type: integer
+      is_active:
+        description: 是否激活
+        example: true
+        type: boolean
+      name:
+        description: 用户姓名
+        example: 张三
+        type: string
+      role:
+        description: 用户角色
+        example: user
+        type: string
+    type: object
+host: localhost:8088
+info:
+  contact: {}
+  description: 基于 Gin、GORM 和 PostgreSQL 的 RESTful API
+  title: WebAPI
+  version: "1.0"
+paths:
+  /admin/users:
+    post:
+      consumes:
+      - application/json
+      description: 管理员创建新用户账户，可以指定用户角色
+      parameters:
+      - description: 用户创建信息
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 创建成功，返回用户详细信息
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: 请求参数错误或邮箱已存在
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 未授权访问
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 权限不足
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 创建新用户（管理员）
+      tags:
+      - admin
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: 用户使用邮箱和密码登录系统，成功后返回JWT访问令牌
+      parameters:
+      - description: 登录凭据
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登录成功，返回访问令牌和用户信息
+          schema:
+            $ref: '#/definitions/models.LoginResponse'
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 登录凭据无效
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: 用户登录
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: 注册新用户账户，创建成功后需要使用登录接口获取访问令牌
+      parameters:
+      - description: 用户注册信息
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 注册成功，返回用户ID
+          schema:
+            properties:
+              message:
+                type: string
+              user_id:
+                type: integer
+            type: object
+        "400":
+          description: 请求参数错误或邮箱已存在
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: 用户注册
+      tags:
+      - auth
+  /products:
+    get:
+      description: 获取所有产品的列表，包括产品基本信息和关联用户信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功，返回产品列表
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+        "401":
+          description: 未授权访问
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取产品列表
+      tags:
+      - products
+    post:
+      consumes:
+      - application/json
+      description: 创建一个新的产品记录，需要提供产品基本信息
+      parameters:
+      - description: 产品创建信息
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 创建成功，返回产品详细信息
+          schema:
+            $ref: '#/definitions/models.Product'
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 未授权访问
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 创建新产品
+      tags:
+      - products
+  /products/{id}:
+    delete:
+      description: 根据产品ID删除指定产品（软删除）
+      parameters:
+      - description: 产品ID
+        example: 1
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: 删除成功，无返回内容
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 未授权访问
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 删除产品
+      tags:
+      - products
+    get:
+      description: 根据产品ID获取产品的详细信息，包括关联的用户信息
+      parameters:
+      - description: 产品ID
+        example: 1
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功，返回产品详细信息
+          schema:
+            $ref: '#/definitions/models.Product'
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 未授权访问
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 产品不存在
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取单个产品详情
+      tags:
+      - products
+    put:
+      consumes:
+      - application/json
+      description: 根据产品ID更新产品的详细信息，支持部分字段更新
+      parameters:
+      - description: 产品ID
+        example: 1
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      - description: 产品更新信息
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功，返回更新后的产品信息
+          schema:
+            $ref: '#/definitions/models.Product'
+        "400":
+          description: 请求参数错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 未授权访问
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 产品不存在
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 更新产品信息
+      tags:
+      - products
+  /users:
+    get:
+      description: 获取用户列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: 获取所有用户
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      description: 根据ID删除用户
+      parameters:
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: 删除用户
+      tags:
+      - users
+    get:
+      description: 根据ID获取用户
+      parameters:
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: 获取用户
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: 根据ID更新用户信息
+      parameters:
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 用户信息
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: 更新用户
+      tags:
+      - users
+  /users/profile:
+    get:
+      description: 获取当前登录用户的个人资料信息，不包含敏感数据
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功，返回用户资料
+          schema:
+            $ref: '#/definitions/models.UserProfile'
+        "401":
+          description: 未授权访问或令牌无效
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取当前用户资料
+      tags:
+      - users
+securityDefinitions:
+  ApiKeyAuth:
+    description: Bearer token for authentication
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
