@@ -1,10 +1,10 @@
 package controllers
 
 import (
+	"go-webapi-example/models"
+	"go-webapi-example/services"
 	"net/http"
 	"strconv"
-	"webapi/models"
-	"webapi/services"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

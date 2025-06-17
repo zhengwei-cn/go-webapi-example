@@ -1,17 +1,17 @@
 package main
 
 import (
+	"go-webapi-example/config"
+	"go-webapi-example/database"
+	"go-webapi-example/routes"
 	"log"
-	"webapi/config"
-	"webapi/database"
-	"webapi/routes"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	_ "webapi/docs" // swagger docs
+	_ "go-webapi-example/docs" // swagger docs
 )
 
 // @title WebAPI

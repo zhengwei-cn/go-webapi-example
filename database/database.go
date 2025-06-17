@@ -1,9 +1,9 @@
 package database
 
 import (
-	"webapi/config"
-	"webapi/models"
-	"webapi/services"
+	"go-webapi-example/config"
+	"go-webapi-example/models"
+	"go-webapi-example/services"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

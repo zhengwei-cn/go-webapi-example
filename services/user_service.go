@@ -2,8 +2,8 @@ package services
 
 import (
 	"errors"
-	"webapi/models"
-	"webapi/utils"
+	"go-webapi-example/models"
+	"go-webapi-example/utils"
 
 	"gorm.io/gorm"
 )

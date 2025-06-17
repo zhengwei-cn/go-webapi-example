@@ -1,9 +1,9 @@
 package middleware
 
 import (
+	"go-webapi-example/utils"
 	"net/http"
 	"strings"
-	"webapi/utils"
 
 	"github.com/gin-gonic/gin"
 )

@@ -1,7 +1,7 @@
 package services
 
 import (
-	"webapi/models"
+	"go-webapi-example/models"
 
 	"gorm.io/gorm"
 )

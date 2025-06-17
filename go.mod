@@ -1,4 +1,4 @@
-module webapi
+module go-webapi-example
 
 go 1.24.4
 

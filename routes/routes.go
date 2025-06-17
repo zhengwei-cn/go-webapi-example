@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"webapi/controllers"
-	"webapi/middleware"
+	"go-webapi-example/controllers"
+	"go-webapi-example/middleware"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
